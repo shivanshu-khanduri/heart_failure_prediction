@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heart Failure Risk Assessment - AI Powered</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --accent: #06b6d4;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #0f172a;
+            --dark-light: #1e293b;
+            --glass: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --shadow: rgba(0, 0, 0, 0.25);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: radial-gradient(ellipse at top, #1e293b 0%, #0f172a 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated background particles */
+        .bg-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: var(--primary);
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: float 15s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) scale(0); }
+            50% { opacity: 1; }
+            100% { transform: translateY(-100vh) scale(1); }
+        }
+
+        /* Gradient orbs */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(40px);
+            opacity: 0.3;
+            pointer-events: none;
+            z-index: -1;
+            animation: pulse 8s ease-in-out infinite alternate;
+        }
+
+        .orb-1 {
+            width: 300px;
+            height: 300px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            top: 20%;
+            right: 10%;
+            animation-delay: 0s;
+        }
+
+        .orb-2 {
+            width: 250px;
+            height: 250px;
+            background: linear-gradient(45deg, var(--accent), var(--success));
+            bottom: 20%;
+            left: 10%;
+            animation-delay: 2s;
+        }
+
+        .orb-3 {
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(45deg, var(--secondary), var(--warning));
+            top: 60%;
+            right: 30%;
+            animation-delay: 4s;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.3); }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header with stunning animations */
+        .header {
+            text-align: center;
+            margin-bottom: 4rem;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: 300px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            filter: blur(100px);
+            opacity: 0.1;
+            z-index: -1;
+            animation: headerGlow 6s ease-in-out infinite;
+        }
+
+        @keyframes headerGlow {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.2); }
+        }
+
+        .header-icon {
+            font-size: 4rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            display: inline-block;
+            animation: iconPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes iconPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .header h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #ffffff, #cbd5e1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+        }
+
+        .header p {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+            font-weight: 400;
+            opacity: 0.9;
+        }
+
+        .ai-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-top: 1rem;
+            box-shadow: 0 8px 32px rgba(99, 102, 241, 0.3);
+            animation: badgeFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes badgeFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        /* Main content layout */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 420px;
+            gap: 3rem;
+            align-items: start;
+        }
+
+        /* Glassmorphism form container */
+        .form-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 3rem;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 32px 64px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .form-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Revolutionary form inputs */
+        .form-group {
+            position: relative;
+            transform-style: preserve-3d;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            letter-spacing: 0.01em;
+        }
+
+        .input-wrapper {
+            position: relative;
+            overflow: hidden;
+            border-radius: 16px;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 1.25rem 1.5rem;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            font-size: 1rem;
+            color: var(--text-primary);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.12);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .form-group input:focus + .input-glow,
+        .form-group select:focus + .input-glow {
+            opacity: 1;
+            transform: scaleX(1);
+        }
+
+        .input-glow {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            opacity: 0;
+            transform: scaleX(0);
+            transition: all 0.3s ease;
+        }
+
+        .help-text {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+            opacity: 0.8;
+        }
+
+        /* Stunning binary inputs */
+        .binary-input {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.75rem;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            padding: 1rem 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            flex: 1;
+            font-weight: 500;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .radio-option::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.6s;
+        }
+
+        .radio-option:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .radio-option:hover::before {
+            left: 100%;
+        }
+
+        .radio-option input[type="radio"]:checked + .radio-content {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            box-shadow: 0 8px 32px rgba(99, 102, 241, 0.4);
+        }
+
+        .radio-option:has(input[type="radio"]:checked) {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-color: var(--primary);
+            color: white;
+            box-shadow: 0 8px 32px rgba(99, 102, 241, 0.4);
+            transform: translateY(-2px) scale(1.02);
+        }
+
+        .radio-option input[type="radio"] {
+            display: none;
+        }
+
+        /* Mind-blowing predict button */
+        .predict-button {
+            width: 100%;
+            padding: 1.5rem 2rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 1.125rem;
+            font-weight: 700;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 16px 64px rgba(99, 102, 241, 0.3);
+        }
+
+        .predict-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s;
+        }
+
+        .predict-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 24px 80px rgba(99, 102, 241, 0.5);
+        }
+
+        .predict-button:hover::before {
+            left: 100%;
+        }
+
+        .predict-button:active {
+            transform: translateY(-1px);
+        }
+
+        .predict-button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Results container with premium feel */
+        .results-container {
+            position: sticky;
+            top: 2rem;
+        }
+
+        .model-info {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 32px 64px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .model-info::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+        }
+
+        .model-info h3 {
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 700;
+            font-size: 1.125rem;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .info-item strong {
+            background: linear-gradient(135deg, var(--accent), var(--success));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+        }
+
+        /* Spectacular prediction results */
+        .prediction-result {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 2rem;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 32px 64px rgba(0, 0, 0, 0.3);
+            display: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .prediction-result::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--success), transparent);
+        }
+
+        .result-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .risk-badge {
+            display: inline-block;
+            padding: 0.75rem 2rem;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.125rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .risk-badge::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .risk-low {
+            background: linear-gradient(135deg, var(--success), #34d399);
+            color: white;
+        }
+
+        .risk-medium {
+            background: linear-gradient(135deg, var(--warning), #fbbf24);
+            color: white;
+        }
+
+        .risk-high {
+            background: linear-gradient(135deg, var(--danger), #f87171);
+            color: white;
+        }
+
+        .result-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* Mesmerizing probability visualization */
+        .probability-bars {
+            margin: 2rem 0;
+        }
+
+        .probability-item {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .probability-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .probability-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .probability-bar {
+            height: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .probability-bar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: barShimmer 2s infinite;
+        }
+
+        @keyframes barShimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .probability-fill {
+            height: 100%;
+            border-radius: 6px;
+            transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .prob-survive {
+            background: linear-gradient(90deg, var(--success), #34d399);
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .prob-risk {
+            background: linear-gradient(90deg, var(--warning), #f97316);
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.4);
+        }
+
+        /* Loading animation */
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 2rem 0;
+            padding: 2rem;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Error handling */
+        .error-message {
+            background: linear-gradient(135deg, var(--danger), #f87171);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            margin: 1rem 0;
+            display: none;
+            font-weight: 500;
+            box-shadow: 0 8px 32px rgba(239, 68, 68, 0.3);
+        }
+
+        /* Disclaimer with style */
+        .disclaimer {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-top: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .disclaimer p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Responsive design */
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .results-container {
+                position: static;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .header {
+                margin-bottom: 2rem;
+            }
+            
+            .form-container {
+                padding: 2rem 1.5rem;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .binary-input {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+        }
+
+        /* Fade-in animations */
+        .fade-in {
+            animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Hover effects for enhanced interactivity */
+        .form-group {
+            transition: transform 0.2s ease;
+        }
+
+        .form-group:hover {
+            transform: translateZ(10px);
+        }
+
+        .model-info, .prediction-result {
+            transition: transform 0.3s ease;
+        }
+
+        .model-info:hover, .prediction-result:hover {
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated background elements -->
+    <div class="bg-particles" id="particles"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <div class="container">
+        <div class="header">
+            <div class="header-icon">
+                <i class="fas fa-heartbeat"></i>
+            </div>
+            <h1>Cardiovascular Risk Intelligence</h1>
+            <p>Advanced machine learning-powered heart failure risk assessment using clinical biomarkers and patient data</p>
+            <div class="ai-badge">
+                <i class="fas fa-brain"></i> AI Powered Analysis
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="form-container">
+                <form id="predictionForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="age">
+                                <i class="fas fa-calendar-alt"></i> Age (years)
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="number" id="age" name="age" min="0" max="100" required>
+                                <div class="input-glow"></div>
+                            </div>
+                            <div class="help-text">Patient's age in years</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="sex">
+                                <i class="fas fa-user"></i> Biological Sex
+                            </label>
+                            <div class="binary-input">
+                                <label class="radio-option">
+                                    <input type="radio" name="sex" value="0" required>
+                                    <i class="fas fa-venus"></i> Female
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="sex" value="1" required>
+                                    <i class="fas fa-mars"></i> Male
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="ejection_fraction">
+                                <i class="fas fa-heart"></i> Ejection Fraction (%)
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="number" id="ejection_fraction" name="ejection_fraction" min="10" max="80" step="0.1" required>
+                                <div class="input-glow"></div>
+                            </div>
+                            <div class="help-text">Heart pumping efficiency (Normal: 50-70%)</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="serum_creatinine">
+                                <i class="fas fa-vial"></i> Serum Creatinine (mg/dL)
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="number" id="serum_creatinine" name="serum_creatinine" min="0.5" max="5.0" step="0.1" required>
+                                <div class="input-glow"></div>
+                            </div>
+                            <div class="help-text">Kidney function biomarker (Normal: 0.6-1.2 mg/dL)</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="serum_sodium">
+                                <i class="fas fa-flask"></i> Serum Sodium (mEq/L)
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="number" id="serum_sodium" name="serum_sodium" min="125" max="150" required>
+                                <div class="input-glow"></div>
+                            </div>
+                            <div class="help-text">Electrolyte balance (Normal: 136-145 mEq/L)</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="time">
+                                <i class="fas fa-clock"></i> Follow-up Period (days)
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="number" id="time" name="time" min="1" max="300" required>
+                                <div class="input-glow"></div>
+                            </div>
+                            <div class="help-text">Days since initial diagnosis</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="anaemia">
+                                <i class="fas fa-tint"></i> Anaemia
+                            </label>
+                            <div class="binary-input">
+                                <label class="radio-option">
+                                    <input type="radio" name="anaemia" value="0" required>
+                                    <i class="fas fa-check-circle"></i> Absent
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="anaemia" value="1" required>
+                                    <i class="fas fa-exclamation-circle"></i> Present
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="diabetes">
+                                <i class="fas fa-cubes"></i> Diabetes Mellitus
+                            </label>
+                            <div class="binary-input">
+                                <label class="radio-option">
+                                    <input type="radio" name="diabetes" value="0" required>
+                                    <i class="fas fa-check-circle"></i> Absent
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="diabetes" value="1" required>
+                                    <i class="fas fa-exclamation-circle"></i> Present
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="high_blood_pressure">
+                                <i class="fas fa-heartbeat"></i> Hypertension
+                            </label>
+                            <div class="binary-input">
+                                <label class="radio-option">
+                                    <input type="radio" name="high_blood_pressure" value="0" required>
+                                    <i class="fas fa-check-circle"></i> Absent
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="high_blood_pressure" value="1" required>
+                                    <i class="fas fa-exclamation-circle"></i> Present
+                                </label>
+                            </div>
